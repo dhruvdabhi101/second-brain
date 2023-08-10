@@ -1,0 +1,22 @@
+**/node_modules/
+**/package-lock.json
+**/.env
+**/.env.*
+
+# OS generated files #
+**/.DS_Store
+**/.DS_Store?
+
+
+
+# Logs and databases #
+**/*.log
+
+# Build files #
+**/build
+**/dist
+**/out
+**/target
+**/next/
+secondbrainfrontend/.next/
+
