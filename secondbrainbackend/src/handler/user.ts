@@ -11,7 +11,7 @@ export const createUser = async (req: Request, res: Response) => {
         await connectDB();
         const { username, password, email } = req.body;
 
-      const user = User.findOne({ username: username.toString() });
+      const user = await User.findOne({ username: username.toString() });
       if(user) {
           return res.status(400).json({ message: "User already exists" });
       }
@@ -38,13 +38,14 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const signin = async (req: Request, res: Response) => {
     const {username, password} = req.body;
+    const hash = await hashPassword(password);
     try {
         await connectDB();
         const user = await User.findOne({ username: username.toString() });
         if (!user) {
             return res.status(400).json({ message: "User does not exist" });
         }
-        const isMatch = await comparePassword(password.toString(), user.password);
+        const isMatch = await comparePassword(password.toString(), hash);
         if (!isMatch) {
             return res.status(400).json({ message: "Incorrect password" });
         }else {
