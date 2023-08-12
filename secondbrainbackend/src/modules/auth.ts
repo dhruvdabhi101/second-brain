@@ -6,11 +6,13 @@ import * as jwt from "jsonwebtoken";
 dotenv.config();
 
 export const comparePassword = async (password: string, hash: string) => {
-    return bcrypt.compare(password, hash);
+    const answer = await bcrypt.compare(password, hash);
+    return answer;
 };
 
 export const hashPassword = async (password: string) => {
-    return bcrypt.hash(password, 3);
+    const hashed =  await bcrypt.hash(password, 3);
+    return hashed;
 }
 
 export const generateToken = (uid) => {

@@ -1,5 +1,12 @@
+"use client"
 import Link from "next/link";
+import { redirect } from "next/navigation";
+
+
 const LandingPage = () => {
+    if(localStorage.getItem("token")){
+        redirect("/dashboard")
+    }
     return (
         <>
             <div className="hero min-h-screen bg-base-200">

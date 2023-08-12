@@ -17,8 +17,8 @@ export async function createArea(req: any, res: any) {
         const uid = req.user.id;
         const area = new Area({
             user: uid,
-            title: title,
-            description: description,
+            title,
+            description,
             projects: []
         });
         await area.save();
