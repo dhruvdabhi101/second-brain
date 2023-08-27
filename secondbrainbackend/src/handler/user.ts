@@ -11,7 +11,7 @@ export const createUser = async (req: Request, res: Response) => {
         await connectDB();
         const { username, password, email } = req.body;
 
-        const user = await User.findOne({ username: username.toString(), email: email });
+        const user = await User.findOne({ username: username.toString(), email });
         if (user) {
             return res.status(400).json({ message: "User already exists" });
         }
@@ -51,7 +51,7 @@ export const signin = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Wrong password" });
         }
         const token = generateToken(user._id);
-        return res.status(200).json({ message: "Logged in successfully", token: token });
+        return res.status(200).json({ message: "Logged in successfully", token });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal Server Error" });

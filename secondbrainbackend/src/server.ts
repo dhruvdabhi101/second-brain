@@ -6,17 +6,19 @@ import { createUser, signin } from './handler/user';
 import { protect } from './modules/auth';
 const app: Express = express();
 
-app.use(cors());
+const corsOptions ={
+    origin:'http://localhost:3001',
+    credentials:true,            // access-control-allow-credentials:true
+}
+app.use(cors(corsOptions));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-
-app.use("/api",protect ,router);
-
 app.post("/signup", createUser);
 app.post("/signin", signin);
+app.use("/api",protect ,router);
 
 app.get("/", (req: Request, res: Response) => {
     res.status(200);

@@ -26,6 +26,7 @@ interface IProject extends Document {
 interface IArea extends Document {
   user: IUser['_id'];
   title: string;
+  link: string;
   description?: string;
   projects: IProject['_id'][];
 }
@@ -70,6 +71,7 @@ const ProjectSchema: Schema<IProject> = new Schema({
 const AreaSchema: Schema<IArea> = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   title: { type: String, required: true },
+  link: { type: String, required: false },
   description: { type: String },
   projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
 });
