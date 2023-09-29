@@ -9,7 +9,7 @@ export default function Home() {
     const { push } = useRouter()
     useEffect(() => {
         if (localStorage.getItem("token")) {
-            push("/dashboard")
+            push("/dashboard/area")
         }
     }, [push])
 
@@ -44,6 +44,8 @@ export default function Home() {
             if (res.status === 200) {
                 console.log(res.data)
                 localStorage.setItem("token", res.data.token)
+                push("/dashboard")
+                
             } else {
                 console.log(res.data)
                 setPassError(true)

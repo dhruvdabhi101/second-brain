@@ -7,7 +7,7 @@ import { protect } from './modules/auth';
 const app: Express = express();
 
 const corsOptions ={
-    origin:'http://localhost:3001',
+    origin:'*',
     credentials:true,            // access-control-allow-credentials:true
 }
 app.use(cors(corsOptions));

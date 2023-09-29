@@ -9,8 +9,8 @@ const router = Router();
 router.get("/area", getAreas)
 router.get("/area/:id", getArea)
 router.post("/area", createArea)
-router.put("/area", updateArea)
-router.delete("/area", deleteArea)
+router.put("/area/:id", updateArea)
+router.delete("/area/:id", deleteArea)
 
 
 

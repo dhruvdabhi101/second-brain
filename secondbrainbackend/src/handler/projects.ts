@@ -15,7 +15,7 @@ export async function createProject(req: any, res: any) {
             return;
         }
 
-        // creating Project and pushing it to Area 
+        // creating Project and pushing it to Area
         const uid = req.user.id;
         const project = new Project({
             user: uid,

@@ -1,13 +1,16 @@
 'use client'
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import axios from "axios"
-import { redirect } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 
 export default function Home() {
-    if (localStorage.getItem("token")) {
-        redirect("/dashboard")
-    }
+    const { push } = useRouter()
+    useEffect(() => {
+        if (localStorage.getItem("token")) {
+            push("/dashboard/area")
+        }
+    }, [push])
     const [passError, setPassError] = useState(false)
     const [passErrorString, setPassErrorString] = useState("")
     const [email, setEmail] = useState("")
@@ -60,7 +63,8 @@ export default function Home() {
             if (res.status === 201) {
                 console.log(res.data)
                 localStorage.setItem("token", res.data.token)
-            }else{
+                redirect("/dashboard")
+            } else {
                 setPassError(true)
                 setPassErrorString(res.data.message)
             }

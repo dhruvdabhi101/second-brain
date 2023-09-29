@@ -61,7 +61,8 @@ export async function getArea(req: any, res: any) {
 export async function updateArea(req: any, res: any) {
     try {
         await connectDB();
-        const { aid, title, description } = req.body;
+        const aid = req.params.id;
+        const { title, description } = req.body;
         const uid = req.user.id;
         const area = await Area.findById(aid);
         if (!area) {
@@ -87,7 +88,7 @@ export async function updateArea(req: any, res: any) {
 export async function deleteArea(req: any, res: any) {
     try {
         await connectDB();
-        const { aid } = req.body;
+        const aid = req.params.id
         const uid = req.user.id;
         const result = await Area.findByIdAndDelete(aid);
         if (!result) {
