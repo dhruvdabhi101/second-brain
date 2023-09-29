@@ -14,13 +14,15 @@ interface IProject extends Document {
   user: IUser['_id'];
   title: string;
   description?: string;
-  todos: {
+  todos: todo[];
+  resources: IResource['_id'][];
+  archived: boolean;
+}
+
+interface ITodo extends Document {
     title: string;
     description?: string;
     completed: boolean;
-  }[];
-  resources: IResource['_id'][];
-  archived: boolean;
 }
 
 interface IArea extends Document {
@@ -87,19 +89,28 @@ const ResourceSchema: Schema<IResource> = new Schema({
   archived: { type: Boolean, default: false },
 });
 
+const TodoSchema: Schema<ITodo> = new Schema({
+    title: { type: String, required: true },
+    description: { type: String },
+    completed: { type: Boolean, default: false },
+});
+
 const User: Model<IUser> = mongoose.model<IUser>('User', UserSchema);
 const Project: Model<IProject> = mongoose.model<IProject>('Project', ProjectSchema);
 const Area: Model<IArea> = mongoose.model<IArea>('Area', AreaSchema);
 const Resource: Model<IResource> = mongoose.model<IResource>('Resource', ResourceSchema);
+const Todo: Model<ITodo> = mongoose.model<ITodo>('Todo', TodoSchema);
 
 export {
   IUser,
   IProject,
   IArea,
   IResource,
+  ITodo,
   User,
   Project,
   Area,
   Resource,
+  Todo
 };
 

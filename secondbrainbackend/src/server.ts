@@ -25,6 +25,4 @@ app.get("/", (req: Request, res: Response) => {
     res.json({ message: "Hello" });
 });
 
-// TODO: Add Middleware for protecation and authentication
-
 export default app;
