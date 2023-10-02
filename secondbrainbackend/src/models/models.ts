@@ -14,7 +14,7 @@ interface IProject extends Document {
   user: IUser['_id'];
   title: string;
   description?: string;
-  todos: todo[];
+  todos: ITodo[];
   resources: IResource['_id'][];
   archived: boolean;
 }
