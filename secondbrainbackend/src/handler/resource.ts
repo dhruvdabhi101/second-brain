@@ -2,7 +2,7 @@ import { connectDB } from "../modules/db";
 import { Area, User, Project, Todo, Resource } from "../models/models";
 
 
-/* 
+/*
   user: IUser['_id'];
   title: string;
   description?: string;
@@ -21,11 +21,11 @@ export async function createResource(req: any, res: any) {
         // connecting to database
         await connectDB();
         const { title, description, projectID, type, markdownContent, link } = req.body;
-        const alreadyCreated = await Resource.findOne({ title:title, user: req.user.id });
+        const alreadyCreated = await Resource.findOne({ title, user: req.user.id });
 
         // checking if already created or not
-        if (alreadyCreated.title === title) {
-            res.status(400).json({ message: "Project already exists" });
+        if (alreadyCreated !== null) {
+            res.status(400).json({ message: "resource already exists" });
             return;
         }
 
@@ -42,7 +42,9 @@ export async function createResource(req: any, res: any) {
         });
 
         await resource.save();
-        await Project.findByIdAndUpdate(projectID, { $push: { resources: resource._id } });
+        await Project.findByIdAndUpdate( { _id: projectID },
+            { $push: { resources: resource._id } }
+                                       );
         return res.status(200).json({ message: "Resource created" });
 
     } catch (err) {
@@ -57,13 +59,13 @@ export async function getResourcesByProject(req: any, res: any) {
 
         // getting area id from params
         const uid = req.user.id;
-        const { projectID } = req.params;
+        const { id } = req.params;
 
         // finding area
-        const project = await Project.findById(projectID);
+        const project = await Project.findById(id);
         if (!project) {
             // if area not found
-            return res.status(400).json({ message: "Area not found" });
+            return res.status(400).json({ message: "project not found" });
         }
         // finding projects
         const resources = await Resource.find({ _id: { $in: project.resources } });
@@ -118,7 +120,7 @@ export async function deleteResource(req: any, res: any) {
         if (!result) {
             return res.status(400).json({ message: "Resource not found" });
         }
-        await Project.findOneAndUpdate({ _id: pid }, { $pull: { projects: rid } });
+        await Project.findOneAndUpdate({ _id: pid }, { $pull: { resources: rid } });
 
         return res.status(200).json({ message: "Resource deleted" });
     } catch (err) {

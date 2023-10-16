@@ -1,7 +1,8 @@
 import { Request, Response, Router } from "express";
 import { createUser, signin } from "./handler/user";
 import { createArea, deleteArea, getArea, getAreas, updateArea } from "./handler/area";
-import { createProject, deleteProject, getProject, getProjectsByArea } from "./handler/projects";
+import { addTodo, createProject, deleteProject, deleteTodo, getProject, getProjectsByArea, getTodosByProject, updateProject, updateTodo } from "./handler/projects";
+import { createResource, deleteResource, getResource, getResourcesByProject, updateResource } from "./handler/resource";
 
 
 
@@ -19,6 +20,16 @@ router.post("/project", createProject)
 router.put("/project/:id", updateProject)
 router.delete("/project/:id", deleteProject)
 
+router.get("/project/todo", getTodosByProject)
+router.post("/project/todo", addTodo)
+router.put("project/todo", updateTodo)
+router.delete("project/todo", deleteTodo)
+
+router.get("/project/resources/:id", getResourcesByProject)
+router.get("/resource/:id", getResource)
+router.post("/resource", createResource)
+router.put("/resource", updateResource)
+router.delete("/resource", deleteResource)
 
 export {
     router

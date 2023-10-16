@@ -7,13 +7,14 @@ export async function createProject(req: any, res: any) {
         // connecting to database
         await connectDB();
         const { title, description, areaID } = req.body;
-        const alreadyCreated = await Project.findOne({ title:title, user: req.user.id });
+        const alreadyCreated = await Project.findOne({ title, user: req.user.id });
 
         // checking if already created or not
-        if (alreadyCreated.title === title) {
+        if (alreadyCreated !== null) {
             res.status(400).json({ message: "Project already exists" });
             return;
         }
+        console.log("Here")
 
         // creating Project and pushing it to Area
         const uid = req.user.id;
@@ -27,7 +28,8 @@ export async function createProject(req: any, res: any) {
         });
 
         await project.save();
-        const area = Area.findById(areaID);
+        const area = await Area.findById(areaID);
+        console.log(area);
         await Area.findByIdAndUpdate(areaID, { $push: { projects: project._id } });
         return res.status(200).json({ message: "Project created" });
 
@@ -43,10 +45,10 @@ export async function getProjectsByArea(req: any, res: any) {
 
         // getting area id from params
         const uid = req.user.id;
-        const { aid } = req.params;
+        const { id } = req.params;
 
         // finding area
-        const area = await Area.findById(aid);
+        const area = await Area.findById(id);
         if (!area) {
             // if area not found
             return res.status(400).json({ message: "Area not found" });
@@ -107,6 +109,18 @@ export async function deleteProject(req: any, res: any) {
         await Area.findOneAndUpdate({ _id: aid }, { $pull: { projects: result._id } });
 
         return res.status(200).json({ message: "Project deleted" });
+    } catch (err) {
+        return res.status(500).json({ message: err });
+    }
+}
+
+export async function getTodosByProject(req: any, res: any) {
+    try {
+        await connectDB();
+        const { pid } = req.params;
+        const uid = req.user.id;
+        const result = await Todo.find({ project: pid });
+        return res.status(200).json({ todos: result });
     } catch (err) {
         return res.status(500).json({ message: err });
     }
