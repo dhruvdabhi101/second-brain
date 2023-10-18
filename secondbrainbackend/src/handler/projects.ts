@@ -22,6 +22,7 @@ export async function createProject(req: any, res: any) {
             user: uid,
             title,
             description,
+            area: areaID,
             todos: [],
             resources: [],
             archived: false,

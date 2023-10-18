@@ -12,6 +12,7 @@ interface IUser extends Document {
 
 interface IProject extends Document {
   user: IUser['_id'];
+  area: IArea['_id'];
   title: string;
   description?: string;
   todos: ITodo[];
@@ -58,6 +59,7 @@ const ProjectSchema: Schema<IProject> = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   title: { type: String, required: true },
   description: { type: String },
+  area: { type: Schema.Types.ObjectId, ref: 'Area', required: true },
   todos: [
     {
       title: { type: String, required: true },
