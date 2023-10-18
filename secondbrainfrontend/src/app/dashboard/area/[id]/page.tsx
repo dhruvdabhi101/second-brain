@@ -1,7 +1,8 @@
 "use client";
-import AreaCard from "@/components/AreaCard";
+import ProjectCard from "@/components/ProjectCard";
 import { getAreaById } from "@/services/Areas";
-import { getProjects, createProject } from "@/services/Project";
+import { getProjects, createProject, updateProject } from "@/services/Project";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function Page({ params }: { params: { id: string } }) {
@@ -10,9 +11,15 @@ export default function Page({ params }: { params: { id: string } }) {
 
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
+  const searchBarOn = (e: KeyboardEvent) => {
+    if (e.ctrlKey && e.key === "k") {
+      document.getElementById("search-bar").focus();
+    }
+  };
 
   useEffect(() => {
     const header = localStorage.getItem("token");
+    window.addEventListener("keydown", searchBarOn);
     const id = params.id;
     fetchAreaAndProjects(header, id).then(() => console.log("fetched area"));
   }, [params.id]);
@@ -54,11 +61,27 @@ export default function Page({ params }: { params: { id: string } }) {
       console.log(err);
     }
   };
+  const pushToArchived = async (id: string) => {
+    const header = localStorage.getItem("token");
+    const project = {
+      archived: true,
+    };
+    try {
+      const data = await updateProject(header, project, id);
+      if (data.status === 200) {
+        await fetchProjects();
+      } else {
+        console.log(data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <>
       <div className="flex flex-col self-center h-full w-full justify-center items-center gap-5 p-6">
-        <div className="w-[70%]">
+        <div className="w-[70%] flex flex-row gap-5 justify-center items-center">
           <button
             className="btn btn-primary self-start"
             onClick={() => document.getElementById("area-form").showModal()}
@@ -66,6 +89,12 @@ export default function Page({ params }: { params: { id: string } }) {
             {" "}
             Create Project{" "}
           </button>
+          <input
+            type="text"
+            id="search-bar"
+            placeholder="Search Project with Ctrl + K"
+            className="input input-bordered  w-full max-w-xs focus:input-primary"
+          />
         </div>
         {/* area modal form */}
         <dialog id="area-form" className="modal">
@@ -95,14 +124,23 @@ export default function Page({ params }: { params: { id: string } }) {
             <button> close </button>
           </form>
         </dialog>
-        <div className="flex flex-col gap-5 w-full">
-          {projects.map((project: any, i: number) => (
-            <AreaCard
-              key={i}
-              name={project.title}
-              description={project.description}
-            />
-          ))}
+        <div className="flex flex-col gap-5 w-full md:w-[60%] xl:w-[50%]">
+          {projects.map((project: any, i: number) => {
+            {
+              if (!project.archived) {
+                return (
+                  <Link href={`/dashboard/project/${project["_id"]}`}>
+                    <ProjectCard
+                      key={i}
+                      name={project.title}
+                      description={project.description}
+                      pushToArchived={() => pushToArchived(project["_id"])}
+                    />
+                  </Link>
+                );
+              }
+            }
+          })}
         </div>
       </div>
     </>

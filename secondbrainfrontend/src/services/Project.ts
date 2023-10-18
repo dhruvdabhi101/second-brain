@@ -33,7 +33,7 @@ export async function getProjects(header, aid) {
 export async function updateProject(header, project, id) {
   const headers = { Authorization: `Bearer ${header}` };
   const res = await axios.put(
-    "https://localhost:3000/api/project/" + id,
+    "http://localhost:3000/api/project/" + id,
     project,
     {
       headers: headers,
