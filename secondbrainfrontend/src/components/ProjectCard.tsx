@@ -14,13 +14,15 @@ export default function ProjectCard(props) {
             )}
           </div>
         </div>
-        <div>
-          <input
-            type="checkbox"
-            className="checkbox checkbox-primary"
-            onChange={props.pushToArchived}
-          />
-        </div>
+        {props.pushToArchived && (
+          <div>
+            <input
+              type="checkbox"
+              className="checkbox checkbox-primary"
+              onChange={props.pushToArchived}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

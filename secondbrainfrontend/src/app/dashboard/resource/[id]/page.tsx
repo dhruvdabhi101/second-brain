@@ -11,8 +11,11 @@ import {
   deleteRes,
 } from "@/services/Resources";
 import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { usePDF } from "react-to-pdf";
 
 export default function Page({ params }: { params: { id: string } }) {
+  const { toPDF, targetRef } = usePDF({ filename: "page.pdf" });
   const [title, setTitle] = useState("");
   const [link, setLink] = useState("");
   const [description, setDescription] = useState("");
@@ -20,6 +23,7 @@ export default function Page({ params }: { params: { id: string } }) {
   const [markdownMode, setMarkdownMode] = useState(false);
   const [updateMode, setUpdateMode] = useState(false);
   const [resource, setResource] = useState({});
+  const { push } = useRouter();
 
   const fetchResource = async () => {
     const header = localStorage.getItem("token");
@@ -63,6 +67,9 @@ export default function Page({ params }: { params: { id: string } }) {
   };
 
   useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      push("/auth/login");
+    }
     const header = localStorage.getItem("token");
     const fetchResource = async () => {
       const header = localStorage.getItem("token");
@@ -79,7 +86,7 @@ export default function Page({ params }: { params: { id: string } }) {
       }
     };
     fetchResource().then(() => console.log("fetched resource"));
-  }, [params.id]);
+  }, [push, params.id]);
 
   return (
     <>
@@ -110,10 +117,19 @@ export default function Page({ params }: { params: { id: string } }) {
                 />{" "}
               </span>
               {resource.type === "markdown" && (
-                <div className="prose border-[1px] border-gray-600 rounded-md w-full p-4 mt-8">
+                <div
+                  className="prose border-[1px] border-gray-600 rounded-md w-full p-4 mt-8"
+                  ref={targetRef}
+                >
                   <Markdown>{resource.markdownContent}</Markdown>
                 </div>
               )}
+              <button
+                className="btn btn-success w-[30%]"
+                onClick={() => toPDF()}
+              >
+                Convert to PDF
+              </button>
             </div>
           )}
 

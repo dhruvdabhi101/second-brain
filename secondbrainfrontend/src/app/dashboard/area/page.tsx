@@ -13,9 +13,14 @@ const Home = () => {
   const [areas, setAreas] = useState([]);
   const { push, refresh } = useRouter();
 
+  const logout = () => {
+    localStorage.removeItem("token");
+    push("/auth/login");
+  };
+
   useEffect(() => {
     if (!localStorage.getItem("token")) {
-      push("/login");
+      push("/auth/login");
     }
     fetchAreas().then(() => console.log("fetched areas"));
   }, [push]);
@@ -48,13 +53,17 @@ const Home = () => {
   return (
     <>
       <div className="flex flex-col self-center h-full w-full justify-center items-center gap-5 p-6">
-        <div className="w-[70%]">
+        <div className="w-[70%] flex flex-row justify-between">
           <button
             className="btn btn-primary self-start"
             onClick={() => document.getElementById("area-form").showModal()}
           >
             {" "}
             Create Area{" "}
+          </button>
+          <button className="btn btn-error " onClick={logout}>
+            {" "}
+            Logout
           </button>
         </div>
         {/* area modal form */}
