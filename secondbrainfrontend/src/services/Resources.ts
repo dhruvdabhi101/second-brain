@@ -26,10 +26,10 @@ export async function addResource(
   return res;
 }
 
-export async function getResourcesByProject(header, resourceid) {
+export async function getResourcesByProject(header, pid) {
   const headers = { Authorization: `Bearer ${header}` };
   const res = await axios.get(
-    `http://localhost:3000/api/project/resources/${resourceid}`,
+    `http://localhost:3000/api/project/resources/${pid}`,
     {
       headers: headers,
     }
@@ -37,13 +37,29 @@ export async function getResourcesByProject(header, resourceid) {
   return res;
 }
 
-export async function getResources(header, projectID) {
+export async function getResource(header, id) {
   const headers = { Authorization: `Bearer ${header}` };
-  const res = await axios.get(
-    `http://localhost:3000/api/resource/${projectID}`,
+  const res = await axios.get(`http://localhost:3000/api/resource/${id}`, {
+    headers: headers,
+  });
+  return res;
+}
+
+export async function updateRes(header, id, resource) {
+  const headers = { Authorization: `Bearer ${header}` };
+  const res = await axios.put(
+    `http://localhost:3000/api/resource/${id}`,
+    resource,
     {
       headers: headers,
     }
   );
+  return res;
+}
+export async function deleteRes(header, id) {
+  const headers = { Authorization: `Bearer ${header}` };
+  const res = await axios.delete(`http://localhost:3000/api/resource/${id}`, {
+    headers: headers,
+  });
   return res;
 }

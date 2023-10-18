@@ -188,10 +188,7 @@ export default function Page({ params }: { params: { id: string } }) {
               {resources.length &&
                 resources.map((resource, i) => {
                   return (
-                    <tr
-                      key={i}
-                      className="hover:bg-primary hover:text-white rounded-md"
-                    >
+                    <tr key={i} className="hover:bg-primary">
                       {/* <Link
                         href={`/dashboard/resource/${resource._id}`}
                         key={i}
