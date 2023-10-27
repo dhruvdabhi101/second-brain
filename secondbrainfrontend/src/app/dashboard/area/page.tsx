@@ -35,6 +35,7 @@ const Home = () => {
       if (data.status === 200) {
         refresh();
         await fetchAreas();
+        document.getElementById("area-form").close();
       } else {
         console.log(data);
       }

@@ -8,6 +8,9 @@ import { useEffect, useState } from "react";
 export default function Page({ params }: { params: { id: string } }) {
   const [area, setArea] = useState({});
   const [projects, setProjects] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searched, setSearched] = useState([]);
+  const [searchMode, setSearchMode] = useState(false); // [ {title: "title", area: "area"}, ...
 
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
@@ -35,6 +38,16 @@ export default function Page({ params }: { params: { id: string } }) {
     }
   };
 
+  const searchText = (e: any) => {
+    setSearchMode(true);
+    let keyword = searchKeyword;
+    let filteredProjects = projects.filter((project: any) => {
+      return project.title.toLowerCase().includes(keyword.toLowerCase());
+    });
+    console.log(filteredProjects);
+    setSearched(filteredProjects);
+  };
+
   const fetchProjects = async () => {
     const header = localStorage.getItem("token");
     const projectdata = await getProjects(header, area["_id"]);
@@ -54,6 +67,7 @@ export default function Page({ params }: { params: { id: string } }) {
       );
       if (data.status === 200) {
         await fetchProjects();
+        document.getElementById("area-form").close();
       } else {
         console.log(data);
       }
@@ -94,12 +108,16 @@ export default function Page({ params }: { params: { id: string } }) {
             id="search-bar"
             placeholder="Search Project with Ctrl + K"
             className="input input-bordered  w-full max-w-xs focus:input-primary"
+            onChange={(e) => setSearchKeyword(e.target.value)}
           />
+          <button className="btn btn-success " onClick={searchText}>
+            {"Search "}
+          </button>
         </div>
         {/* area modal form */}
         <dialog id="area-form" className="modal">
           <div className="modal-box">
-            <p className="text-lg font-bold">Create Area</p>
+            <p className="text-lg font-bold">Create Project</p>
             <div className="flex flex-col gap-4 my-3">
               <input
                 type="text"
@@ -125,22 +143,50 @@ export default function Page({ params }: { params: { id: string } }) {
           </form>
         </dialog>
         <div className="flex flex-col gap-5 w-full md:w-[60%] xl:w-[50%]">
-          {projects.map((project: any, i: number) => {
-            {
-              if (!project.archived) {
-                return (
-                  <Link href={`/dashboard/project/${project["_id"]}`}>
-                    <ProjectCard
-                      key={i}
-                      name={project.title}
-                      description={project.description}
-                      pushToArchived={() => pushToArchived(project["_id"])}
-                    />
-                  </Link>
-                );
+          {searched.length === 0 ? (
+            projects.map((project: any, i: number) => {
+              {
+                if (!project.archived) {
+                  return (
+                    <Link href={`/dashboard/project/${project["_id"]}`}>
+                      <ProjectCard
+                        key={i}
+                        id={project["_id"]}
+                        name={project.title}
+                        description={project.description}
+                        pushToArchived={() => pushToArchived(project["_id"])}
+                      />
+                    </Link>
+                  );
+                }
               }
-            }
-          })}
+            })
+          ) : (
+            <>
+              <div className="text-gray-500">
+                {searchMode
+                  ? `Showing ${searched.length} results for "${searchKeyword}"`
+                  : ""}
+              </div>
+              {searched.map((project: any, i: number) => {
+                {
+                  if (!project.archived) {
+                    return (
+                      <Link href={`/dashboard/project/${project["_id"]}`}>
+                        <ProjectCard
+                          key={i}
+                          id={project["_id"]}
+                          name={project.title}
+                          description={project.description}
+                          pushToArchived={() => pushToArchived(project["_id"])}
+                        />
+                      </Link>
+                    );
+                  }
+                }
+              })}
+            </>
+          )}
         </div>
       </div>
     </>

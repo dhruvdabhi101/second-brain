@@ -6,10 +6,10 @@ export async function createArea(req: any, res: any) {
         // connecting to database
         await connectDB();
         const { title, description } = req.body;
-        const alreadyCreated = await Area.findOne({ title });
+        const alreadyCreated = await Area.findOne({ _id: req.user.id, title });
 
         // checking if already created or not
-        if (alreadyCreated) {
+        if (alreadyCreated !== null) {
             res.status(400).json({ message: "Area already exists" });
             return;
         }

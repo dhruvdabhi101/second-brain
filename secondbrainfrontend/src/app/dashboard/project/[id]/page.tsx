@@ -1,12 +1,18 @@
 "use client";
 import ProjectCard from "@/components/ProjectCard";
 import { getAreaById } from "@/services/Areas";
-import { getProjects, createProject, updateProject } from "@/services/Project";
+import {
+  getProjects,
+  createProject,
+  updateProject,
+  getProject,
+} from "@/services/Project";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Markdown from "markdown-to-jsx";
 import remarkGfm from "remark-gfm";
 import { addResource, getResourcesByProject } from "@/services/Resources";
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }: { params: { id: string } }) {
   const [resources, setResources] = useState([]);
@@ -16,7 +22,12 @@ export default function Page({ params }: { params: { id: string } }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [link, setLink] = useState("");
+  const [project, setProject] = useState();
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searched, setSearched] = useState([]);
+  const [searchMode, setSearchMode] = useState(false); // [ {title: "title", area: "area"}, ...
 
+  const { refresh } = useRouter();
   const createResource = async () => {
     try {
       const header = localStorage.getItem("token");
@@ -35,6 +46,9 @@ export default function Page({ params }: { params: { id: string } }) {
       );
       if (data.status === 200) {
         console.log(data);
+        fetchResources();
+        document.getElementById("area-form").close();
+        refresh();
       } else {
         console.log("error");
       }
@@ -67,6 +81,31 @@ export default function Page({ params }: { params: { id: string } }) {
       console.log(data.data.resources);
       setResources(data.data.resources);
     }
+    const projectData = await getProject(header, params.id);
+    if (projectData.status === 200) {
+      setProject(data.data.project);
+    }
+  };
+
+  const searchText = (e: any) => {
+    setSearchMode(true);
+    let keyword = searchKeyword;
+    let filteredResources = resources.filter((res: any) => {
+      return res.title.toLowerCase().includes(keyword.toLowerCase());
+    });
+    console.log(filteredResources);
+    setSearched(filteredResources);
+  };
+
+  const unArchive = async () => {
+    const header = localStorage.getItem("token");
+    const data = await updateProject(
+      header,
+      {
+        archived: false,
+      },
+      params.id
+    );
   };
 
   useEffect(() => {
@@ -93,12 +132,21 @@ export default function Page({ params }: { params: { id: string } }) {
             {" "}
             Create Resources{" "}
           </button>
+          {project && project.archived === true ? (
+            <button className="btn btn-success">Unarchive</button>
+          ) : (
+            <></>
+          )}
           <input
             type="text"
             id="search-bar"
             placeholder="Search Project with Ctrl + K"
             className="input input-bordered  w-full max-w-xs focus:input-primary"
+            onChange={(e) => setSearchKeyword(e.target.value)}
           />
+          <button className="btn btn-success " onClick={searchText}>
+            Search
+          </button>
         </div>
         {/* area modal form */}
         <dialog id="area-form" className="modal">
@@ -172,7 +220,12 @@ export default function Page({ params }: { params: { id: string } }) {
             <button> close </button>
           </form>
         </dialog>
-        <div className="w-[100%] flex flex-center justify-center">
+        <div className="w-[100%] flex flex-col flex-center items-center justify-center">
+          {searched.length > 0 && (
+            <div className="text-gray-500">
+              {`Showing ${searched.length} results for \"${searchKeyword}\"`}
+            </div>
+          )}
           <table className="table w-[60%] ">
             {/* head */}
             <thead>
@@ -184,28 +237,35 @@ export default function Page({ params }: { params: { id: string } }) {
               </tr>
             </thead>
             <tbody>
-              {/* row 1 */}
-              {resources.length &&
-                resources.map((resource, i) => {
-                  return (
-                    <tr key={i} className="hover:bg-primary">
-                      {/* <Link
-                        href={`/dashboard/resource/${resource._id}`}
-                        key={i}
-                      > */}
-                      <th>{i}</th>
-                      <td>{resource.title}</td>
-                      <td>{resource.type}</td>
-                      <td>
-                        <Link href={`/dashboard/resource/${resource["_id"]}`}>
-                          Link{" "}
-                        </Link>
-                      </td>
-
-                      {/* </Link> */}
-                    </tr>
-                  );
-                })}
+              {searched.length === 0
+                ? resources.map((resource, i) => {
+                    return (
+                      <tr key={i} className="hover:bg-primary">
+                        <th>{i}</th>
+                        <td>{resource.title}</td>
+                        <td>{resource.type}</td>
+                        <td>
+                          <Link href={`/dashboard/resource/${resource["_id"]}`}>
+                            Link{" "}
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })
+                : searched.map((resource, i) => {
+                    return (
+                      <tr key={i} className="hover:bg-primary">
+                        <th>{i}</th>
+                        <td>{resource.title}</td>
+                        <td>{resource.type}</td>
+                        <td>
+                          <Link href={`/dashboard/resource/${resource["_id"]}`}>
+                            Link{" "}
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
             </tbody>
           </table>
         </div>
