@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "tauri": "tauri"
   },
   "dependencies": {
     "@types/node": "20.4.1",
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",
+    "@tauri-apps/cli": "^1.5.6",
     "daisyui": "^3.5.1"
   }
 }
